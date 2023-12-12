@@ -1,9 +1,7 @@
 import datetime
 import polars as pl
 
-from utils import get_data, get_male_names
-
-MALE_NAMES = get_male_names()
+from utils import get_data
 
 data = get_data()
 df_customers = data["customers"]
@@ -19,22 +17,14 @@ df_senior_cat_food = df_products.select(pl.col(["sku", "desc"])).filter(
     )
 )
 
-
-def not_male_name(s: str) -> bool:
-    return s.split(" ")[0] not in MALE_NAMES
-
-
-df_female_names = df_customers.filter(
-    pl.col("name").map_elements(lambda s: not_male_name(s))
-)
-df_female_staten_island = df_female_names.filter(
+df_staten_island = df_customers.filter(
     pl.col("citystatezip").str.starts_with("Staten Island")
 )
 
-df_female_staten_island_cat_food_orders = (
+df_staten_island_cat_food_orders = (
     df_senior_cat_food.join(df_orders_items, on="sku")
     .join(df_orders, on="orderid")
-    .join(df_female_staten_island, on="customerid")
+    .join(df_staten_island, on="customerid")
     .select(
         [
             "name",
@@ -51,7 +41,7 @@ df_female_staten_island_cat_food_orders = (
 )
 
 sol_customer_id = (
-    df_female_staten_island_cat_food_orders.select(["name", "phone", "customerid"])
+    df_staten_island_cat_food_orders.select(["name", "phone", "customerid"])
     .join(df_orders, on="customerid")
     .join(df_orders_items, on="orderid")
     .join(df_products, on="sku")
