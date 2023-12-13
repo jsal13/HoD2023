@@ -56,8 +56,9 @@ sol_customer_id = (
 
 print(
     "Day 5:",
-    df_customers.select(["customerid", "name", "phone"])
-    .filter(pl.col("customerid") == sol_customer_id)
-    .get_column("phone")
-    .item(),
+    df_customers.select(["customerid", "name", "phone", "citystatezip"]).filter(
+        pl.col("customerid") == sol_customer_id
+    )
+    # .get_column("phone")
+    # .item(),
 )
