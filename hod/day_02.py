@@ -4,6 +4,7 @@ import polars as pl
 
 from utils import get_data
 
+INITIALS = "DS"
 
 data = get_data()
 df_customers = data["customers"]
@@ -20,7 +21,7 @@ df_customer_initials = df_customers.select(
     pl.col("customerid"),
     pl.col("phone"),
     pl.col("name").map_elements(lambda s: get_initials(name=s)).alias("initials"),
-).filter(pl.col("initials") == "JP")
+).filter(pl.col("initials") == INITIALS)
 
 df_orders_2017 = df_orders.select(
     pl.col("customerid"), pl.col("ordered").dt.year().alias("year"), pl.col("orderid")
@@ -37,5 +38,5 @@ df_joined = (
     )
 )
 
-val = df_joined.filter(pl.col("desc").str.contains("Coffee")).get_column("phone").item()
+val = df_joined.filter(pl.col("desc").str.contains("Coffee")).get_column("phone")
 print(val)
